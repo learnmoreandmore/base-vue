@@ -4,11 +4,14 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import ElementPlus from 'unplugin-element-plus/vite'
 import path from 'node:path'
 
 export default defineConfig({
   plugins: [
     vue(),
+    /** 随 `import { ElMessage } from 'element-plus'` 等自动注入对应组件样式，免手写 style/css */
+    ElementPlus({}),
     AutoImport({
       resolvers: [ElementPlusResolver({ importStyle: 'css' })],
       dts: 'src/types/auto-imports.d.ts',

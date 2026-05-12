@@ -24,7 +24,10 @@ npm run dev
 ## 工程约定
 
 - **路径别名**：`@` 指向 `src`（见 `vite.config.ts` → `resolve.alias`）。
-- **Element Plus**：通过 `unplugin-vue-components` / `unplugin-auto-import` 按需引入，无需在业务里手写大量 `import`。
+- **Element Plus**
+  - **模板里的组件**（如 `<el-button>`）：由 `unplugin-vue-components` + `ElementPlusResolver({ importStyle: 'css' })` 按需解析并注入样式。
+  - **脚本里的函数式 API**（如 `ElMessage`、`ElMessageBox`、`ElNotification`，以及 `main.ts` 里的 `ElLoading`）：由 **`unplugin-element-plus`** 在构建时扫描 `import { … } from 'element-plus'`，自动插入对应的 `element-plus/es/components/<name>/style/css`，**不必**在 `main.ts` 里为每个 API 手写一行样式 import。
+  - **导入约定**：请统一写成 **`import { ElXxx } from 'element-plus'`**（`El` 前缀与官方导出一致）。**不要**使用 `element-plus/es/components/.../index.mjs` 等深路径从子包导入，否则 `unplugin-element-plus` 匹配不到，样式不会自动注入（易出现 Message 无固定定位、类型色丢失等问题）。
 - **HTTP**：封装在 `src/api/http.ts`，`baseURL` 来自环境变量 `VITE_API_BASE_URL`，未配置时回退为 `/api`。
 
 ## 环境变量
@@ -74,3 +77,5 @@ npm run dev
 - [Vue 3 文档](https://vuejs.org/)
 - [Vite 文档](https://vitejs.dev/)
 - [TypeScript 与 Vue](https://vuejs.org/guide/typescript/overview.html)
+- [Element Plus](https://element-plus.org/)
+- [unplugin-element-plus](https://github.com/element-plus/unplugin-element-plus)（函数式 API 按需样式）
