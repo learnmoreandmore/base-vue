@@ -6,8 +6,10 @@ import { defineAsyncComponent, h } from 'vue'
  * 浏览器长期不 idle，会拖到 2s+ 才拉 JS，LCP 被严重拖慢）。
  */
 const LoanBigScreenView = defineAsyncComponent({
-  loader: () => import('@/views/loan/LoanBigScreenView.vue'),
-  delay: 80,
+  /** prefetch：与首屏其它资源并行拉取，缩短大屏 chunk + ECharts 的等待链 */
+  loader: () => import(/* webpackPrefetch: true */ '@/views/loan/LoanBigScreenView.vue'),
+  /** 0：立即显示 loading，避免 Vue 默认 200ms 延迟段内视口「空白」拉高 Speed Index */
+  delay: 0,
   loadingComponent: {
     name: 'BigScreenLoading',
     render() {

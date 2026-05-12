@@ -35,7 +35,8 @@ export async function fetchUserProfile(token: string): Promise<UserProfileResult
     userInfo: {
       id: 'U10001',
       name: `${role} 用户`,
-      avatar: 'https://dummyimage.com/120x120/409eff/ffffff&text=Admin',
+      /** 避免外链占位图在审计/弱网下拖慢请求链；需要头像时可换成本地资源或业务 CDN */
+      avatar: '',
       role,
     },
     routes: getRoleRoutes(role),
