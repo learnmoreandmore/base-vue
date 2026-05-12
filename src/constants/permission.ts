@@ -101,11 +101,11 @@ const homeModule: BackendRoute = {
   path: '/home',
   name: 'Home',
   component: 'layout',
-  redirect: '/home/index',
   meta: { title: '首页', icon: 'HomeFilled' },
   children: [
     {
-      path: '/home/index',
+      /** 空 path：实际 URL 为 `/home`，避免静态托管将 `/home/index` 误解析为目录并 301 到 `/home/` */
+      path: '',
       name: 'HomeIndex',
       component: 'home/HomeView',
       meta: { title: '信贷可视化大屏', affix: true, hideInMenu: true },

@@ -15,7 +15,12 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    redirect: '/home/index',
+    redirect: '/home',
+  },
+  /** 旧链接与书签兼容（静态站勿再使用含 `/index` 的落地路径） */
+  {
+    path: '/home/index',
+    redirect: '/home',
   },
 ]
 

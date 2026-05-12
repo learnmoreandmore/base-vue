@@ -20,7 +20,7 @@ const shortcuts = [
   { title: '进件管理', path: '/loan/application', code: LP.application.view },
   { title: '授信审批', path: '/loan/approval', code: LP.approval.view },
   { title: '放款执行', path: '/loan/disburse', code: LP.disburse.view },
-  { title: '信贷大屏', path: '/home/index', code: LP.screen.view },
+  { title: '信贷大屏', path: '/home', code: LP.screen.view },
 ]
 
 const load = async () => {

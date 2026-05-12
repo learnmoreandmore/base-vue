@@ -20,7 +20,7 @@ const isFlattenedSingleHiddenChild = (menu: BackendRoute) =>
     <template v-for="menu in menuRoutes" :key="menu.path">
       <el-menu-item
         v-if="isFlattenedSingleHiddenChild(menu) && menu.children?.[0]"
-        :index="menu.children[0].path"
+        :index="menu.children[0].path || menu.path"
       >
         {{ menu.meta.title }}
       </el-menu-item>

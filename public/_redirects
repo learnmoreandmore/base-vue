@@ -1,0 +1,2 @@
+# Cloudflare Pages / Netlify：SPA 回退（与 Netlify 兼容的 _redirects 语法）
+/* /index.html 200

@@ -5,29 +5,32 @@ import type { BackendRoute } from '@/types/auth'
  */
 export function getFirstAccessibleMenuPath(menus: BackendRoute[]): string {
   if (!menus?.length) {
-    return '/home/index'
+    return '/home'
   }
 
-  const walk = (items: BackendRoute[]): string | null => {
+  const walk = (items: BackendRoute[], parentPath = ''): string | null => {
     for (const item of items) {
       const hidden = item.meta?.hidden
       if (hidden) {
         continue
       }
       if (item.children?.length) {
-        const hit = walk(item.children)
+        const hit = walk(item.children, item.path)
         if (hit) {
           return hit
         }
       }
-      if (item.path && item.component !== 'layout') {
-        return item.path
+      if (item.component !== 'layout') {
+        const leaf = item.path || parentPath
+        if (leaf) {
+          return leaf
+        }
       }
     }
     return null
   }
 
-  return walk(menus) ?? '/home/index'
+  return walk(menus) ?? '/home'
 }
 
 /**
@@ -39,17 +42,20 @@ export function collectMenuPaths(menus: BackendRoute[]): Set<string> {
     return set
   }
 
-  const walk = (items: BackendRoute[]) => {
+  const walk = (items: BackendRoute[], parentPath = '') => {
     for (const item of items) {
       if (item.meta?.hidden) {
         continue
       }
       if (item.children?.length) {
-        walk(item.children)
+        walk(item.children, item.path)
         continue
       }
-      if (item.path && item.component !== 'layout') {
-        set.add(item.path)
+      if (item.component !== 'layout') {
+        const leaf = item.path || parentPath
+        if (leaf) {
+          set.add(leaf)
+        }
       }
     }
   }

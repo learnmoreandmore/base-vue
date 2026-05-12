@@ -16,11 +16,11 @@ const form = reactive({
 const afterLoginPath = computed(() => {
   const raw = route.query.redirect
   if (typeof raw !== 'string' || !raw.startsWith('/') || raw.startsWith('//')) {
-    return '/home/index'
+    return '/home'
   }
   const pathPart = raw.split('?')[0]
   if (pathPart.includes('..')) {
-    return '/home/index'
+    return '/home'
   }
   return raw
 })

@@ -26,7 +26,7 @@ export function setupRouterGuards(router: Router) {
 
     if (userStore.isLogin && to.path === '/login') {
       const redirect = resolveSafeRedirectPath(to.query.redirect)
-      return next(redirect ?? '/home/index')
+      return next(redirect ?? '/home')
     }
 
     if (whiteList.includes(to.path)) {
