@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { constantRoutes, fallbackRoute } from './static-routes'
 import { setupRouterGuards } from './guards'
+import { setRouter } from './routerRef'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,5 +10,6 @@ const router = createRouter({
 })
 
 setupRouterGuards(router)
+setRouter(router)
 
 export default router

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { getRouter } from '@/router/routerRef'
 import { useUserStore } from '@/stores/user'
 
 const http = axios.create({
@@ -35,7 +36,7 @@ http.interceptors.response.use(
     ElMessage.error(messageMap[status] ?? error?.message ?? '网络请求异常')
     if (status === 401) {
       void (async () => {
-        const { default: router } = await import('@/router')
+        const router = getRouter()
         const fullPath = router.currentRoute.value.fullPath
         await useUserStore().logout()
         if (!router.currentRoute.value.path.startsWith('/login')) {

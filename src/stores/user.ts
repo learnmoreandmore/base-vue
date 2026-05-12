@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { fetchUserProfile, login } from '@/api/modules/auth'
+import { getRouter } from '@/router/routerRef'
 import { usePermissionStore } from '@/stores/permission'
 import { useTabsStore } from '@/stores/tabs'
 import type { UserInfo } from '@/types/auth'
@@ -39,7 +40,7 @@ export const useUserStore = defineStore('user', {
       this.userInfo = null
       permissionStore.reset()
       if (routeNames.length > 0) {
-        const { default: router } = await import('@/router')
+        const router = getRouter()
         routeNames.forEach((name) => {
           if (router.hasRoute(name)) {
             router.removeRoute(name)
