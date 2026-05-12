@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 import { checkLargeUpload, mergeLargeUpload, uploadLargeChunk } from '@/api/modules/largeUpload'
 import { compressImageFile, shouldCompressFile } from '@/utils/fileCompress'
 import type { UploadedFileRecord } from '@/types/upload'
@@ -72,6 +73,9 @@ const previewVisible = ref(false)
 const previewKind = ref<'image' | 'pdf' | 'none'>('none')
 const previewTitle = ref('')
 const previewSrc = ref('')
+
+/** 窄屏：对话框全屏 + 降级说明（内嵌仍尝试在线预览） */
+const isNarrowViewport = useMediaQuery('(max-width: 991.98px)')
 
 const isWorking = computed(() => ['hashing', 'compressing', 'uploading'].includes(status.value))
 const canPause = computed(() => status.value === 'uploading')
@@ -412,6 +416,38 @@ const closePreview = () => {
   previewKind.value = 'none'
 }
 
+const pdfDownloadName = computed(() => {
+  const name = previewTitle.value?.trim() || 'document.pdf'
+  return /\.pdf$/i.test(name) ? name : `${name}.pdf`
+})
+
+/** 必须在用户点击等手势内同步调用，避免移动端拦截弹窗 */
+const openPdfNewTab = () => {
+  const src = previewSrc.value
+  if (!src) {
+    return
+  }
+  const opened = window.open(src, '_blank', 'noopener,noreferrer')
+  if (!opened) {
+    ElMessage.warning('无法打开新窗口，请使用「保存到本机」')
+  }
+}
+
+const downloadPdfBlob = () => {
+  const src = previewSrc.value
+  if (!src) {
+    return
+  }
+  const a = document.createElement('a')
+  a.href = src
+  a.download = pdfDownloadName.value
+  a.rel = 'noopener'
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
 onUnmounted(() => {
   uploadedList.value.forEach(revokeRecordUrl)
 })
@@ -496,6 +532,7 @@ defineExpose({
       v-model="previewVisible"
       :title="previewTitle"
       width="90%"
+      :fullscreen="isNarrowViewport && previewKind === 'pdf'"
       destroy-on-close
       append-to-body
       class="preview-dialog"
@@ -511,17 +548,20 @@ defineExpose({
         />
       </div>
       <div v-else-if="previewKind === 'pdf'" class="preview-pdf">
-        <embed
-          :key="previewSrc"
-          :src="previewSrc"
-          type="application/pdf"
-          class="preview-pdf-embed"
-        />
-        <div class="preview-pdf-actions">
-          <el-link :href="previewSrc" target="_blank" type="primary" :underline="false">
-            新窗口打开 PDF
-          </el-link>
+        <div class="preview-pdf-toolbar">
+          <el-button type="primary" size="small" @click="openPdfNewTab">新窗口打开</el-button>
+          <el-button type="primary" plain size="small" @click="downloadPdfBlob">保存到本机</el-button>
         </div>
+        <p v-if="isNarrowViewport" class="preview-pdf-hint">
+          下方为在线预览。若内嵌区域为空白（部分手机浏览器不支持 blob PDF），请使用「新窗口打开」或「保存到本机」后用系统阅读器查看。
+        </p>
+        <iframe
+          v-if="previewSrc"
+          :key="previewSrc"
+          title="PDF 预览"
+          :src="previewSrc"
+          class="preview-pdf-frame"
+        />
       </div>
     </el-dialog>
   </div>
@@ -625,19 +665,55 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 60vh;
+  flex: 1;
+  min-height: min(48vh, 420px);
 }
 
-.preview-pdf-embed {
+.preview-pdf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.preview-pdf-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--el-text-color-secondary);
+  flex-shrink: 0;
+}
+
+.preview-pdf-frame {
   width: 100%;
   flex: 1;
-  min-height: 65vh;
+  min-height: min(70vh, 720px);
   border: none;
   border-radius: 4px;
+  background: var(--el-fill-color-light);
+  -webkit-overflow-scrolling: touch;
 }
 
-.preview-pdf-actions {
+@media (max-width: 991.98px) {
+  .preview-pdf {
+    min-height: min(72dvh, 640px);
+  }
+
+  .preview-pdf-frame {
+    min-height: min(58dvh, 560px);
+  }
+}
+</style>
+
+<style>
+/* 窄屏 PDF 全屏预览时让 body 参与 flex，iframe 才能吃满剩余高度 */
+.preview-dialog.is-fullscreen .el-dialog__body {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 </style>
