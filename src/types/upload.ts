@@ -7,6 +7,6 @@ export type UploadedFileRecord = {
   size: number
   mimeType: string
   finishedAt: string
-  /** 无服务端 URL 时，图片/PDF 可用本地 Blob 地址预览 */
+  /** 无服务端 URL 时，图片 / PDF / 视频等可用本地 Blob 地址预览 */
   objectUrl?: string
 }

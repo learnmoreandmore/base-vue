@@ -12,6 +12,14 @@ export function mimeFromFilename(filename: string): string {
     svg: 'image/svg+xml',
     zip: 'application/zip',
     txt: 'text/plain;charset=utf-8',
+    mp4: 'video/mp4',
+    webm: 'video/webm',
+    ogg: 'video/ogg',
+    ogv: 'video/ogg',
+    mov: 'video/quicktime',
+    m4v: 'video/x-m4v',
+    mkv: 'video/x-matroska',
+    avi: 'video/x-msvideo',
   }
   return map[ext] ?? 'application/octet-stream'
 }

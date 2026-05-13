@@ -5,6 +5,7 @@ import { checkLargeUpload, mergeLargeUpload, uploadLargeChunk } from '@/api/modu
 import { compressImageFile, shouldCompressFile } from '@/utils/fileCompress'
 import type { UploadedFileRecord } from '@/types/upload'
 import { mimeFromFilename } from '@/utils/mimeFromFilename'
+import { isWeixinBrowser } from '@/utils/weixinUa'
 
 type UploadStatus =
   | 'idle'
@@ -69,9 +70,22 @@ const compressed = ref(false)
 const uploadedList = ref<UploadedFileRecord[]>([])
 
 const previewVisible = ref(false)
-const previewKind = ref<'image' | 'pdf' | 'none'>('none')
+const previewKind = ref<'image' | 'pdf' | 'video' | 'none'>('none')
 const previewTitle = ref('')
 const previewSrc = ref('')
+const previewVideoRef = ref<HTMLVideoElement | null>(null)
+
+/** 微信内 blob 资源：PDF 内嵌基本不可用；视频也常受限 */
+const hideWeixinBlobPdfFrame = computed(
+  () =>
+    previewKind.value === 'pdf' &&
+    previewSrc.value.startsWith('blob:') &&
+    isWeixinBrowser(),
+)
+
+const showWeixinBlobMediaHint = computed(
+  () => previewSrc.value.startsWith('blob:') && isWeixinBrowser(),
+)
 
 const isWorking = computed(() => ['hashing', 'compressing', 'uploading'].includes(status.value))
 const canPause = computed(() => status.value === 'uploading')
@@ -102,7 +116,9 @@ const buildObjectUrlIfNeeded = (file: File, fileUrl?: string): string | undefine
   const isImg =
     file.type.startsWith('image/') || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name)
   const isPdf = file.type === 'application/pdf' || name.endsWith('.pdf')
-  if (isImg || isPdf) {
+  const isVideo =
+    file.type.startsWith('video/') || /\.(mp4|webm|ogg|ogv|mov|m4v|mkv|avi)$/i.test(name)
+  if (isImg || isPdf || isVideo) {
     const type =
       file.type && file.type.length > 0 ? file.type : mimeFromFilename(file.name)
     return URL.createObjectURL(new Blob([file], { type }))
@@ -129,10 +145,13 @@ const pushUploadedRecord = (payload: { file: File; fileHash: string; fileUrl?: s
   emit('update:uploadedList', [...uploadedList.value])
 }
 
-const previewKindOf = (item: UploadedFileRecord): 'image' | 'pdf' | 'none' => {
+const previewKindOf = (item: UploadedFileRecord): 'image' | 'pdf' | 'video' | 'none' => {
   const name = item.filename.toLowerCase()
   if (item.mimeType.startsWith('image/') || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(name)) {
     return 'image'
+  }
+  if (item.mimeType.startsWith('video/') || /\.(mp4|webm|ogg|ogv|mov|m4v|mkv|avi)$/i.test(name)) {
+    return 'video'
   }
   if (item.mimeType === 'application/pdf' || name.endsWith('.pdf')) {
     return 'pdf'
@@ -407,6 +426,8 @@ const clearFile = () => {
 }
 
 const closePreview = () => {
+  previewVideoRef.value?.pause()
+  previewVideoRef.value = null
   previewVisible.value = false
   previewSrc.value = ''
   previewKind.value = 'none'
@@ -417,8 +438,13 @@ const pdfDownloadName = computed(() => {
   return /\.pdf$/i.test(name) ? name : `${name}.pdf`
 })
 
+const videoDownloadName = computed(() => {
+  const raw = previewTitle.value?.trim() || 'video'
+  return /\.(mp4|webm|ogg|ogv|mov|m4v|mkv|avi)$/i.test(raw) ? raw : `${raw}.mp4`
+})
+
 /** 必须在用户点击等手势内同步调用，避免移动端拦截弹窗 */
-const openPdfNewTab = () => {
+const openPreviewSrcInNewTab = () => {
   const src = previewSrc.value
   if (!src) {
     return
@@ -437,6 +463,21 @@ const downloadPdfBlob = () => {
   const a = document.createElement('a')
   a.href = src
   a.download = pdfDownloadName.value
+  a.rel = 'noopener'
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
+const downloadVideoBlob = () => {
+  const src = previewSrc.value
+  if (!src) {
+    return
+  }
+  const a = document.createElement('a')
+  a.href = src
+  a.download = videoDownloadName.value
   a.rel = 'noopener'
   a.style.display = 'none'
   document.body.appendChild(a)
@@ -542,16 +583,41 @@ defineExpose({
           preview-teleported
         />
       </div>
+      <div v-else-if="previewKind === 'video'" class="preview-video">
+        <div class="preview-pdf-toolbar">
+          <el-button type="primary" size="small" @click="openPreviewSrcInNewTab">新窗口打开</el-button>
+          <el-button type="primary" plain size="small" @click="downloadVideoBlob">保存到本机</el-button>
+        </div>
+        <p v-if="showWeixinBlobMediaHint" class="preview-pdf-hint">
+          微信内对本地视频（blob）支持不稳定，推荐优先使用「保存到本机」；若服务端返回 https 直链（如 mp4），一般可正常播放。
+        </p>
+        <video
+          v-if="previewSrc"
+          :key="previewSrc"
+          ref="previewVideoRef"
+          class="preview-video-el"
+          controls
+          playsinline
+          webkit-playsinline
+          x5-video-player-type="h5"
+          x5-playsinline
+          preload="metadata"
+          :src="previewSrc"
+        />
+      </div>
       <div v-else-if="previewKind === 'pdf'" class="preview-pdf">
         <div class="preview-pdf-toolbar">
-          <el-button type="primary" size="small" @click="openPdfNewTab">新窗口打开</el-button>
+          <el-button type="primary" size="small" @click="openPreviewSrcInNewTab">新窗口打开</el-button>
           <el-button type="primary" plain size="small" @click="downloadPdfBlob">保存到本机</el-button>
         </div>
-        <p class="preview-pdf-hint">
+        <p v-if="hideWeixinBlobPdfFrame" class="preview-pdf-hint preview-pdf-hint--weixin">
+          微信内无法内嵌预览本地 PDF（blob）。请使用「保存到本机」后选用其它应用打开；若上传接口返回可公网访问的 https PDF 直链，可再次预览。
+        </p>
+        <p v-else class="preview-pdf-hint">
           若下方预览空白（如部分环境不支持 blob 内嵌 PDF），请使用「新窗口打开」或「保存到本机」。
         </p>
         <iframe
-          v-if="previewSrc"
+          v-if="previewSrc && !hideWeixinBlobPdfFrame"
           :key="previewSrc"
           title="PDF 预览"
           :src="previewSrc"
@@ -676,5 +742,24 @@ defineExpose({
   border: none;
   border-radius: 4px;
   background: var(--el-fill-color-light);
+}
+
+.preview-pdf-hint--weixin {
+  color: var(--el-color-warning);
+}
+
+.preview-video {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 320px;
+}
+
+.preview-video-el {
+  width: 100%;
+  max-height: 560px;
+  border-radius: 4px;
+  background: #000;
 }
 </style>
