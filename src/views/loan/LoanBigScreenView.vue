@@ -287,7 +287,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 12px 12px max(16px, env(safe-area-inset-bottom));
+  padding: 12px 12px 16px;
   color: #e8f1ff;
   background: linear-gradient(180deg, #0c1a2c 0%, #081422 35%, #050a12 100%);
   background-attachment: local;
@@ -300,7 +300,7 @@ onUnmounted(() => {
 }
 .big-screen__head h1 {
   margin: 0;
-  font-size: clamp(18px, 4vw, 26px);
+  font-size: 22px;
   letter-spacing: 2px;
 }
 .sub {
@@ -373,7 +373,7 @@ onUnmounted(() => {
 }
 .panel--map {
   flex: 1 1 auto;
-  min-height: clamp(260px, 38vh, 460px);
+  min-height: 380px;
 }
 .panel--bottom {
   flex: 0 0 auto;
@@ -390,18 +390,18 @@ onUnmounted(() => {
 }
 .panel-chart--map {
   flex: 1 1 auto;
-  min-height: clamp(220px, 32vh, 400px);
-  max-height: min(520px, 52vh);
+  min-height: 320px;
+  max-height: 520px;
 }
 /** 底部折线/仪表盘：固定高度区间，避免与上方地图同列 flex 时被无限拉高 */
 .panel-chart--fixed {
   flex: 0 0 auto;
-  height: clamp(260px, 30vh, 380px);
+  height: 320px;
   min-height: 240px;
   max-height: 400px;
 }
 .panel-chart--fixed.gauge {
-  height: clamp(260px, 30vh, 380px);
+  height: 320px;
   max-height: 400px;
 }
 
@@ -417,6 +417,6 @@ onUnmounted(() => {
   line-height: 1.6;
   border: 1px dashed rgba(64, 158, 255, 0.25);
   border-radius: 8px;
-  min-height: clamp(220px, 32vh, 380px);
+  min-height: 320px;
 }
 </style>

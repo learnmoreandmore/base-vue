@@ -26,7 +26,7 @@ const previewSrc = ref(
     </el-tab-pane>
     <el-tab-pane label="视频 / 音频" name="av">
       <p class="hint">可嵌入双录视频、培训录像；生产环境请使用受控 CDN 与鉴权播放地址。</p>
-      <video class="video" controls playsinline poster="https://picsum.photos/seed/video-poster/960/540">
+      <video class="video" controls poster="https://picsum.photos/seed/video-poster/960/540">
         <source src="" type="video/mp4" />
       </video>
       <p class="muted">未配置真实片源时浏览器不播放，仅保留控件与 poster 占位。</p>
@@ -45,7 +45,8 @@ const previewSrc = ref(
   font-size: 13px;
 }
 .preview-img {
-  width: min(100%, 560px);
+  width: 100%;
+  max-width: 560px;
   height: 240px;
   border-radius: 8px;
 }

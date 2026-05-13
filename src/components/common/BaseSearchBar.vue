@@ -25,20 +25,4 @@ const emit = defineEmits<{
 .search-bar {
   margin-bottom: 12px;
 }
-
-@media (max-width: 991.98px) {
-  .search-bar :deep(.el-form--inline) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-bar :deep(.el-form-item) {
-    margin-right: 0;
-  }
-
-  .search-bar :deep(.el-form-item__content) {
-    flex-wrap: wrap;
-  }
-}
 </style>

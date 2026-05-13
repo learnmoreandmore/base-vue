@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMediaQuery } from '@/composables/useMediaQuery'
-
 const logs = Array.from({ length: 200 }, (_, i) => ({
   id: `log-${i + 1}`,
   level: i % 15 === 0 ? 'ERROR' : 'INFO',
@@ -9,8 +6,7 @@ const logs = Array.from({ length: 200 }, (_, i) => ({
   time: `2026-04-25 12:${String(i % 60).padStart(2, '0')}:00`,
 }))
 
-const isNarrow = useMediaQuery('(max-width: 991.98px)')
-const tableHeight = computed(() => (isNarrow.value ? 360 : 520))
+const tableHeight = 520
 </script>
 
 <template>

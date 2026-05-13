@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useMediaQuery } from '@/composables/useMediaQuery'
 import { checkLargeUpload, mergeLargeUpload, uploadLargeChunk } from '@/api/modules/largeUpload'
 import { compressImageFile, shouldCompressFile } from '@/utils/fileCompress'
 import type { UploadedFileRecord } from '@/types/upload'
@@ -73,9 +72,6 @@ const previewVisible = ref(false)
 const previewKind = ref<'image' | 'pdf' | 'none'>('none')
 const previewTitle = ref('')
 const previewSrc = ref('')
-
-/** 窄屏：对话框全屏 + 降级说明（内嵌仍尝试在线预览） */
-const isNarrowViewport = useMediaQuery('(max-width: 991.98px)')
 
 const isWorking = computed(() => ['hashing', 'compressing', 'uploading'].includes(status.value))
 const canPause = computed(() => status.value === 'uploading')
@@ -532,7 +528,6 @@ defineExpose({
       v-model="previewVisible"
       :title="previewTitle"
       width="90%"
-      :fullscreen="isNarrowViewport && previewKind === 'pdf'"
       destroy-on-close
       append-to-body
       class="preview-dialog"
@@ -552,8 +547,8 @@ defineExpose({
           <el-button type="primary" size="small" @click="openPdfNewTab">新窗口打开</el-button>
           <el-button type="primary" plain size="small" @click="downloadPdfBlob">保存到本机</el-button>
         </div>
-        <p v-if="isNarrowViewport" class="preview-pdf-hint">
-          下方为在线预览。若内嵌区域为空白（部分手机浏览器不支持 blob PDF），请使用「新窗口打开」或「保存到本机」后用系统阅读器查看。
+        <p class="preview-pdf-hint">
+          若下方预览空白（如部分环境不支持 blob 内嵌 PDF），请使用「新窗口打开」或「保存到本机」。
         </p>
         <iframe
           v-if="previewSrc"
@@ -632,17 +627,6 @@ defineExpose({
   flex-wrap: wrap;
 }
 
-@media (max-width: 991.98px) {
-  .actions :deep(.el-button) {
-    flex: 1 1 calc(50% - 4px);
-    min-width: 0;
-  }
-
-  .actions :deep(.el-button + .el-button) {
-    margin-left: 0;
-  }
-}
-
 .status-text {
   margin-top: 8px;
   color: var(--el-text-color-secondary);
@@ -653,12 +637,12 @@ defineExpose({
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  max-height: 75vh;
+  max-height: 560px;
 }
 
 .preview-image {
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 520px;
 }
 
 .preview-pdf {
@@ -666,7 +650,7 @@ defineExpose({
   flex-direction: column;
   gap: 12px;
   flex: 1;
-  min-height: min(48vh, 420px);
+  min-height: 420px;
 }
 
 .preview-pdf-toolbar {
@@ -688,32 +672,9 @@ defineExpose({
 .preview-pdf-frame {
   width: 100%;
   flex: 1;
-  min-height: min(70vh, 720px);
+  min-height: 560px;
   border: none;
   border-radius: 4px;
   background: var(--el-fill-color-light);
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 991.98px) {
-  .preview-pdf {
-    min-height: min(72dvh, 640px);
-  }
-
-  .preview-pdf-frame {
-    min-height: min(58dvh, 560px);
-  }
-}
-</style>
-
-<style>
-/* 窄屏 PDF 全屏预览时让 body 参与 flex，iframe 才能吃满剩余高度 */
-.preview-dialog.is-fullscreen .el-dialog__body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  box-sizing: border-box;
 }
 </style>

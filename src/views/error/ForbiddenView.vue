@@ -26,13 +26,6 @@ const goHome = () => {
 
 <style scoped>
 .error-page {
-  padding: 24px 16px 0;
-  padding-top: max(80px, env(safe-area-inset-top));
-}
-
-@media (min-width: 768px) {
-  .error-page {
-    padding-top: 120px;
-  }
+  padding: 120px 16px 0;
 }
 </style>

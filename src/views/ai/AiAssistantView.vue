@@ -183,7 +183,7 @@ onUnmounted(() => {
 .ai-assistant-page__list {
   flex: 1;
   min-height: 240px;
-  max-height: min(560px, calc(100vh - 320px));
+  max-height: 560px;
   overflow-y: auto;
   padding: 12px 0;
   display: flex;
@@ -202,7 +202,7 @@ onUnmounted(() => {
 }
 
 .ai-assistant-page__bubble {
-  max-width: min(720px, 92%);
+  max-width: 720px;
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 14px;

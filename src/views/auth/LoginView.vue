@@ -62,12 +62,10 @@ const onSubmit = async () => {
 <style scoped>
 .login-page {
   min-height: 100vh;
-  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
-    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  padding: 16px;
   background: linear-gradient(135deg, #409eff 10%, #7f8c8d 100%);
 }
 

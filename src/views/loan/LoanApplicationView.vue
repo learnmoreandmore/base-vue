@@ -185,10 +185,4 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 8px;
 }
-@media (max-width: 991.98px) {
-  .filter-form :deep(.el-form-item) {
-    margin-right: 0;
-    width: 100%;
-  }
-}
 </style>

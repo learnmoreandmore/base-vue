@@ -10,8 +10,6 @@
 
 html {
   overflow-x: clip;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 html,
@@ -26,7 +24,6 @@ body {
   color: var(--text-primary);
   background: var(--bg-page);
   overflow-x: clip;
-  -webkit-tap-highlight-color: transparent;
 }
 
 :focus-visible {
@@ -49,7 +46,6 @@ svg {
 .table-responsive {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* 列总宽较小时可不设 min-width，由业务表自行加 class */
@@ -60,7 +56,6 @@ svg {
 .app-layout {
   height: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
 }
 
 .app-layout__aside {
@@ -88,35 +83,14 @@ svg {
   gap: 8px;
   min-height: 56px;
   height: auto;
-  padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+  padding: 8px 16px;
   background: var(--panel-bg);
   border-bottom: 1px solid #ebeef5;
 }
 
 .app-layout__main {
   padding: 16px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
   min-width: 0;
-}
-
-@media (max-width: 991.98px) {
-  .app-layout__main {
-    padding: 12px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
-
-  .card-panel {
-    padding: 12px;
-  }
-}
-
-/* iOS 聚焦输入框时避免整页缩放：表单控件字号不小于 16px */
-@media (max-width: 991.98px) {
-  .el-input__inner,
-  .el-input__wrapper,
-  .el-textarea__inner {
-    font-size: 16px;
-  }
 }
 
 .card-panel {

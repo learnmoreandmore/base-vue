@@ -42,7 +42,7 @@ const LoanBigScreenView = defineAsyncComponent({
 /* loading 为独立子组件根，需 :deep 穿透 scoped */
 :deep(.home-view__shell) {
   flex: 1;
-  min-height: min(52vh, 420px);
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,7 +54,7 @@ const LoanBigScreenView = defineAsyncComponent({
 
 :deep(.home-view__shell-title) {
   margin: 0;
-  font-size: clamp(22px, 4.2vw, 34px);
+  font-size: 26px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: #e8f1ff;
@@ -64,15 +64,10 @@ const LoanBigScreenView = defineAsyncComponent({
 :deep(.home-view__shell-sub) {
   margin: 14px 0 0;
   max-width: 28em;
-  font-size: clamp(13px, 2vw, 15px);
+  font-size: 14px;
   color: #8aa4b5;
   letter-spacing: 0.04em;
   line-height: 1.5;
 }
 
-@media (max-width: 991.98px) {
-  .home-view {
-    margin: -12px;
-  }
-}
 </style>

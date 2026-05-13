@@ -50,7 +50,7 @@ onUnmounted(() => {
 <style scoped>
 .screen-chart {
   width: 100%;
-  height: clamp(260px, 48vh, 460px);
+  height: 400px;
   min-height: 240px;
 }
 </style>
