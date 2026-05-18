@@ -18,7 +18,11 @@ const previewSrc = ref(
   <el-tabs v-model="active" type="border-card">
     <el-tab-pane label="大文件 / 断点续传" name="upload">
       <p class="hint">对接后端分片接口后，可用于借款合同扫描件、尽调材料等大文件上传。</p>
-      <LargeFileUploader :auto-upload="false" accept=".pdf,.zip,.png,.jpg" @success="onUploadOk" />
+      <LargeFileUploader
+        :auto-upload="false"
+        accept=".pdf,.zip,.png,.jpg,.jpeg,.mp4,.mov,.webm,.m4v,video/*,image/*"
+        @success="onUploadOk"
+      />
     </el-tab-pane>
     <el-tab-pane label="图片预览" name="image">
       <p class="hint">常见能力：缩略图、灯箱预览（此处为静态示例）。</p>

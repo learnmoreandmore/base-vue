@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { LOAN_PERMISSION } from '@/constants/loanPermissions'
+import { LOAN_PERMISSION } from '@/constants/loan'
 import { fetchLoanWorkbenchStats } from '@/api/modules/loan'
 
 const LP = LOAN_PERMISSION

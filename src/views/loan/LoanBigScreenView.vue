@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { echarts } from '@/lib/echartsBoot'
 import type { EChartsType } from '@/lib/echartsBoot'
 import { useElementResize } from '@/composables/useElementResize'
-import DigitalFlipBoard from '@/components/loan/DigitalFlipBoard.vue'
+import DigitalFlipBoard from '@/views/loan/big-screen/DigitalFlipBoard.vue'
 
 const kpi = [
   { label: '在贷余额(亿)', flip: '128.6', trend: '+2.3%' },

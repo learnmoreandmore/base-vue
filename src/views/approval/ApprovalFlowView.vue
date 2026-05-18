@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { reactive } from 'vue'
 import BaseSearchBar from '@/components/common/BaseSearchBar.vue'
+
+const router = useRouter()
 
 const filters = reactive({
   code: '',
@@ -14,6 +17,9 @@ const list = [
 </script>
 
 <template>
+  <div class="approval-flow__toolbar">
+    <el-button type="primary" @click="router.push('/approval/flow-design')">流程配置</el-button>
+  </div>
   <BaseSearchBar>
     <el-form-item label="审批单号">
       <el-input v-model="filters.code" />
@@ -42,3 +48,9 @@ const list = [
     </div>
   </el-card>
 </template>
+
+<style scoped>
+.approval-flow__toolbar {
+  margin-bottom: 12px;
+}
+</style>

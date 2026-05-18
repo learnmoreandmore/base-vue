@@ -1,13 +1,21 @@
 import type {
   LoanApplication,
-  LoanContract,
   LoanDisburseRecord,
   LoanProduct,
   OverdueCase,
   RepayPlanRow,
 } from '@/types/loan'
+import { mockDelay } from '@/api/modules/loan/delay'
 
-const delay = <T>(data: T, ms = 220) => new Promise<T>((resolve) => setTimeout(() => resolve(data), ms))
+export {
+  fetchLoanContracts,
+  fetchLoanContractDetail,
+  pushContractSign,
+  applyLenderSeal,
+  borrowerSignWithHandwriting,
+  simulateBorrowerSign,
+  voidLoanContract,
+} from '@/api/modules/loan/contract'
 
 const products: LoanProduct[] = [
   {
@@ -63,11 +71,6 @@ let applications: LoanApplication[] = [
   },
 ]
 
-const contracts: LoanContract[] = [
-  { id: 'C001', applicationId: 'A20260507002', templateCode: 'STD-LOAN-2026', status: 'signed', signedAt: '2026-05-08 11:00:00' },
-  { id: 'C002', applicationId: 'A20260508001', templateCode: 'STD-LOAN-2026', status: 'pending_sign' },
-]
-
 const disburses: LoanDisburseRecord[] = [
   { id: 'D001', applicationId: 'A20260507002', amount: 200_000, status: 'success', bankRef: 'BK2026050800001', createdAt: '2026-05-08 11:30:00' },
   { id: 'D002', applicationId: 'A20260508001', amount: 800_000, status: 'pending', createdAt: '2026-05-08 12:00:00' },
@@ -90,16 +93,16 @@ export type LoanWorkbenchStats = {
   updatedAt: string
 }
 
-export const fetchLoanProducts = () => delay([...products])
-export const fetchLoanApplications = () => delay([...applications])
+export const fetchLoanProducts = () => mockDelay([...products])
+export const fetchLoanApplications = () => mockDelay([...applications])
 
 export const updateLoanApplicationStatus = (id: string, status: LoanApplication['status']) => {
   const index = applications.findIndex((a) => a.id === id)
   if (index < 0) {
-    return delay<LoanApplication | null>(null, 180)
+    return mockDelay<LoanApplication | null>(null, 180)
   }
   applications[index] = { ...applications[index], status }
-  return delay(applications[index], 180)
+  return mockDelay(applications[index], 180)
 }
 
 export const approveLoanApplication = (id: string) => updateLoanApplicationStatus(id, 'approved')
@@ -124,8 +127,12 @@ export const createLoanApplication = (payload: {
     createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
   }
   applications = [row, ...applications]
-  return delay(row, 400)
+  return mockDelay(row, 400)
 }
+
+export const fetchLoanDisburses = () => mockDelay([...disburses])
+export const fetchRepayPlan = () => mockDelay([...repayPlan])
+export const fetchOverdueCases = () => mockDelay([...overdue])
 
 export const fetchLoanWorkbenchStats = async (): Promise<LoanWorkbenchStats> => {
   const [p, a, d, o] = await Promise.all([
@@ -142,8 +149,3 @@ export const fetchLoanWorkbenchStats = async (): Promise<LoanWorkbenchStats> => 
     updatedAt: new Date().toISOString(),
   }
 }
-
-export const fetchLoanContracts = () => delay([...contracts])
-export const fetchLoanDisburses = () => delay([...disburses])
-export const fetchRepayPlan = () => delay([...repayPlan])
-export const fetchOverdueCases = () => delay([...overdue])

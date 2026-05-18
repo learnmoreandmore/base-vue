@@ -1,5 +1,5 @@
 import type { BackendRoute, UserRole } from '@/types/auth'
-import { LOAN_PERMISSION, loanButtonsAuditor, loanButtonsFull, loanButtonsOps } from '@/constants/loanPermissions'
+import { LOAN_PERMISSION, loanButtonsAuditor, loanButtonsFull, loanButtonsOps } from '@/constants/loan'
 
 const L = LOAN_PERMISSION
 
@@ -38,7 +38,7 @@ const loanCenterModule: BackendRoute = {
     {
       path: '/loan/contract',
       name: 'LoanContract',
-      component: 'loan/LoanContractView',
+      component: 'loan/contract/LoanContractView',
       meta: { title: '合同管理', permissionCode: L.contract.view },
     },
     {
@@ -186,6 +186,12 @@ const roleRoutes: Record<UserRole, BackendRoute[]> = {
           component: 'approval/ApprovalFlowView',
           meta: { title: '业务审批', permissionCode: 'approval:flow:view' },
         },
+        {
+          path: '/approval/flow-design',
+          name: 'ApprovalFlowDesigner',
+          component: 'approval/FlowDesignerView',
+          meta: { title: '流程配置', permissionCode: 'approval:flow-design:view' },
+        },
       ],
       meta: { title: '流程中心', icon: 'List' },
     },
@@ -231,6 +237,12 @@ const roleRoutes: Record<UserRole, BackendRoute[]> = {
           name: 'ApprovalFlow',
           component: 'approval/ApprovalFlowView',
           meta: { title: '业务审批', permissionCode: 'approval:flow:view' },
+        },
+        {
+          path: '/approval/flow-design',
+          name: 'ApprovalFlowDesigner',
+          component: 'approval/FlowDesignerView',
+          meta: { title: '流程配置', permissionCode: 'approval:flow-design:view' },
         },
       ],
       meta: { title: '流程中心', icon: 'List' },
@@ -293,6 +305,7 @@ const roleButtonPermissions: Record<UserRole, string[]> = {
     'system:permission:edit',
     'approval:flow:view',
     'approval:flow:approve',
+    'approval:flow-design:view',
     'material:list:view',
     'material:list:edit',
     'material:list:export',

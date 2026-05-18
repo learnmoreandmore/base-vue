@@ -1,6 +1,9 @@
+import type { ApplicationStatus } from '@/types/loan'
+
 /**
- * 信贷模块权限码单一来源（路由 meta、按钮、指令 v-permission 共用）
+ * 信贷模块常量（权限码、进件状态展示等）
  */
+
 export const LOAN_PERMISSION = {
   workbench: { view: 'loan:workbench:view' },
   product: { view: 'loan:product:view', edit: 'loan:product:edit' },
@@ -34,4 +37,27 @@ export const loanButtonsAuditor = [
   LOAN_PERMISSION.overdue.view,
   LOAN_PERMISSION.overdue.edit,
   LOAN_PERMISSION.screen.view,
+]
+
+export type ApplicationStatusTagType = 'info' | 'success' | 'warning' | 'danger'
+
+export const APPLICATION_STATUS_UI: Record<ApplicationStatus, { label: string; type: ApplicationStatusTagType }> = {
+  draft: { label: '草稿', type: 'info' },
+  submitted: { label: '已提交', type: 'info' },
+  credit_review: { label: '信审中', type: 'warning' },
+  approved: { label: '已通过', type: 'success' },
+  rejected: { label: '已拒绝', type: 'danger' },
+  disbursed: { label: '已放款', type: 'success' },
+}
+
+export const applicationStatusLabel = (s: ApplicationStatus) => APPLICATION_STATUS_UI[s].label
+
+export const applicationStatusTagType = (s: ApplicationStatus) => APPLICATION_STATUS_UI[s].type
+
+export const APPLICATION_STATUS_FILTER_OPTIONS: { label: string; value: ApplicationStatus }[] = [
+  { label: '信审中', value: 'credit_review' },
+  { label: '已提交', value: 'submitted' },
+  { label: '已通过', value: 'approved' },
+  { label: '已拒绝', value: 'rejected' },
+  { label: '已放款', value: 'disbursed' },
 ]

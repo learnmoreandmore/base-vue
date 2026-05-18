@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { LOAN_PERMISSION } from '@/constants/loanPermissions'
+import { LOAN_PERMISSION } from '@/constants/loan'
 import { fetchLoanProducts } from '@/api/modules/loan'
 import type { LoanProduct } from '@/types/loan'
 import { formatCurrency } from '@/utils/formatCurrency'

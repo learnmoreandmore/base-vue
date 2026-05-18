@@ -13,17 +13,26 @@ npm install
 npm run dev
 ```
 
-| 命令            | 说明                          |
-| --------------- | ----------------------------- |
-| `npm run dev`   | 启动开发服务（默认 HTTPS）    |
-| `npm run build` | `vue-tsc` 类型检查 + 生产构建 |
-| `npm run preview` | 本地预览构建产物            |
+| 命令                  | 说明                                                                 |
+| --------------------- | -------------------------------------------------------------------- |
+| `npm run dev`         | 启动开发服务（默认 HTTPS）                                           |
+| `npm run build`       | `vue-tsc` 类型检查 + 生产构建（含 gzip 预压缩等，见下文「生产构建」） |
+| `npm run build:analyze` | 同 `build`，`--mode analyze`：额外生成 `dist/stats.html`（Rollup 体积分析，构建结束会尝试打开浏览器） |
+| `npm run preview`     | 本地预览构建产物                                                     |
 
 开发服务默认监听 **5173**，`host` 为 `0.0.0.0`，便于局域网访问；HTTPS 由 `@vitejs/plugin-basic-ssl` 提供自签名证书。
 
+### 生产构建
+
+- **预压缩**：生产模式会为超过阈值（默认约 10KB）的 `.js` / `.css` / `.json` / `.html` 等在输出目录旁生成 **`.gz`** 侧车文件；部署端需开启「静态 gzip」（如 Nginx `gzip_static on` 或 CDN 等价能力）才会优先下发 `.gz`。
+- **体积分析**：执行 `npm run build:analyze` 会在 **`dist/stats.html`** 输出可视化报告（含 gzip / brotli 体积估算）；与生产构建共用同一套压缩与分包逻辑。
+- **Brotli（`.br`）**：当前使用的 `vite-plugin-compression@0.5.1` 在**同一次构建里**注册 gzip + brotli 两个实例时会因插件内部共享缓存导致第二个算法不产出文件，因此配置中**仅启用 gzip**。若需要同时生成 `.br`，可改用 **`vite-plugin-compression2`** 或单独增加一步压缩脚本。
+- **构建日志**：在 Windows 上，压缩插件打印的路径可能形如 `dist/D:/...`，属于日志展示问题，实际文件仍在 `dist/assets` 等目录下。
+
 ## 工程约定
 
-- **路径别名**：`@` 指向 `src`（见 `vite.config.ts` → `resolve.alias`）。
+- **路径别名**（见 `vite.config.ts` → `resolve.alias`）：`@` → `src`，`@assets` → `src/assets`，`@components` → `src/components`，`@utils` → `src/utils`。
+- **自动导入**：`unplugin-auto-import` / `unplugin-vue-components` 的类型声明分别写入 `src/types/auto-imports.d.ts`、`src/types/components.d.ts`；SFC 中可直接使用 `defineOptions`（`unplugin-vue-define-options`），无需单独 import。
 - **Element Plus**
   - **模板里的组件**（如 `<el-button>`）：由 `unplugin-vue-components` + `ElementPlusResolver({ importStyle: 'css' })` 按需解析并注入样式。
   - **脚本里的函数式 API**（如 `ElMessage`、`ElMessageBox`、`ElNotification`，以及 `main.ts` 里的 `ElLoading`）：由 **`unplugin-element-plus`** 在构建时扫描 `import { … } from 'element-plus'`，自动插入对应的 `element-plus/es/components/<name>/style/css`，**不必**在 `main.ts` 里为每个 API 手写一行样式 import。

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { LOAN_PERMISSION } from '@/constants/loanPermissions'
+import { LOAN_PERMISSION } from '@/constants/loan'
 import { fetchRepayPlan } from '@/api/modules/loan'
 import type { RepayPlanRow } from '@/types/loan'
 import { formatCurrency } from '@/utils/formatCurrency'

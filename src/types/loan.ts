@@ -27,12 +27,40 @@ export interface LoanApplication {
 
 export type ContractStatus = 'pending_sign' | 'signed' | 'void'
 
+export type ContractSignatoryRole = 'borrower' | 'lender' | 'guarantor'
+
+export type ContractSignatoryStatus = 'pending' | 'signed'
+
+export interface ContractSignatory {
+  role: ContractSignatoryRole
+  name: string
+  status: ContractSignatoryStatus
+  signedAt?: string
+}
+
+export type ContractSealType = 'seal' | 'signature'
+
+export interface ContractSeal {
+  party: 'borrower' | 'lender'
+  type: ContractSealType
+  label: string
+  signedAt: string
+  /** 手写签名 PNG（Data URL，用于合同回显） */
+  handwritingDataUrl?: string
+}
+
 export interface LoanContract {
   id: string
   applicationId: string
+  applicantName: string
+  amount: number
   templateCode: string
   status: ContractStatus
+  signatories: ContractSignatory[]
+  seals?: ContractSeal[]
   signedAt?: string
+  pushedAt?: string
+  voidReason?: string
 }
 
 export type DisburseStatus = 'pending' | 'processing' | 'success' | 'failed'

@@ -5,7 +5,7 @@ import { checkLargeUpload, mergeLargeUpload, uploadLargeChunk } from '@/api/modu
 import { compressImageFile, shouldCompressFile } from '@/utils/fileCompress'
 import type { UploadedFileRecord } from '@/types/upload'
 import { mimeFromFilename } from '@/utils/mimeFromFilename'
-import { isWeixinBrowser } from '@/utils/weixinUa'
+import { isWeixinBrowser, weixinUploadAccept } from '@/utils/weixin'
 
 type UploadStatus =
   | 'idle'
@@ -86,6 +86,11 @@ const hideWeixinBlobPdfFrame = computed(
 const showWeixinBlobMediaHint = computed(
   () => previewSrc.value.startsWith('blob:') && isWeixinBrowser(),
 )
+
+/** 微信内改写原生 accept，减轻「只能打开相册」；校验仍按 props.accept */
+const uploadAcceptAttr = computed(() => weixinUploadAccept(props.accept))
+
+const inWeixin = computed(() => isWeixinBrowser())
 
 const isWorking = computed(() => ['hashing', 'compressing', 'uploading'].includes(status.value))
 const canPause = computed(() => status.value === 'uploading')
@@ -505,11 +510,14 @@ defineExpose({
     <el-upload
       :show-file-list="false"
       :auto-upload="false"
-      :accept="accept"
+      :accept="uploadAcceptAttr"
       :on-change="onFileChange"
     >
       <el-button type="primary">{{ buttonText }}</el-button>
     </el-upload>
+    <p v-if="inWeixin" class="weixin-upload-tip">
+      微信内若仍只能选相册：请点右上角「···」→「在浏览器中打开」，再用本页上传 PDF / 压缩包 / 视频等文件。
+    </p>
 
     <div v-if="selectedFile" class="upload-panel">
       <div class="file-meta">
@@ -696,6 +704,14 @@ defineExpose({
 .status-text {
   margin-top: 8px;
   color: var(--el-text-color-secondary);
+}
+
+.weixin-upload-tip {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-color-warning);
+  max-width: 720px;
 }
 
 .preview-body {

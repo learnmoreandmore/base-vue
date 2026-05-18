@@ -3,13 +3,13 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { debounce } from 'lodash-es'
-import { LOAN_PERMISSION } from '@/constants/loanPermissions'
+import { LOAN_PERMISSION } from '@/constants/loan'
 import { createLoanApplication, fetchLoanApplications } from '@/api/modules/loan'
 import {
   APPLICATION_STATUS_FILTER_OPTIONS,
   applicationStatusLabel,
   applicationStatusTagType,
-} from '@/constants/loanApplicationStatus'
+} from '@/constants/loan'
 import type { LoanApplication } from '@/types/loan'
 import { formatCurrency } from '@/utils/formatCurrency'
 import { exportToCsv } from '@/utils/exportCsv'
